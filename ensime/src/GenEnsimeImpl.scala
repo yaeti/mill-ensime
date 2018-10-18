@@ -1,21 +1,20 @@
 package fun.valycorp.mill
 
+import java.io.{File, FileNotFoundException}
+
 import ammonite.ops._
-import coursier.{Cache, Repository, Dependency}
+import coursier.Cache
 import coursier.maven.MavenRepository
+import mill.T
 import mill.define._
 import mill.eval.{Evaluator, PathRef, Result}
 import mill.modules.Jvm._
-import mill.T
 import mill.scalalib._
 import mill.util.Ctx.{Home, Log}
-import mill.util.{Loose, PrintLogger, Strict}
+import mill.util.Strict
 import mill.util.Strict.Agg
 
 import scala.util.Try
-
-import java.io.FileNotFoundException
-import java.io.File
 
 case class EnsimeConfig(
     root: String,
@@ -50,7 +49,7 @@ case class EnsimeProject(
 
 object GenEnsime extends ExternalModule {
 
-  def ensimeConfig(ev: Evaluator[Any], server: String = "2.0.0") = T.command {
+  def ensimeConfig(ev: Evaluator, server: String = "2.0.0") = T.command {
     fun.valycorp.mill.GenEnsimeImpl(
       implicitly,
       ev.rootModule,
@@ -82,7 +81,7 @@ object GenEnsimeImpl {
     write.over(pwd / ".ensime", config)
   }
 
-  def evalOrElse[T](evaluator: Evaluator[_], e: Task[T], default: => T): T = {
+  def evalOrElse[T](evaluator: Evaluator, e: Task[T], default: => T): T = {
     evaluator.evaluate(Agg(e)).values match {
       case Seq()     => default
       case Seq(e: T) => e
@@ -111,7 +110,7 @@ object GenEnsimeImpl {
       case Result.Failure(_, _)   => Set()
     }
 
-  def ensimeGenerateConfig[T](evaluator: Evaluator[T],
+  def ensimeGenerateConfig[T](evaluator: Evaluator,
                               rootModule: mill.Module,
                               server: String): EnsimeConfig = {
 

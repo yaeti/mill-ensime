@@ -31,7 +31,7 @@ object ensime extends ScalaModule with PublishModule {
   )
 
   def compileIvyDeps = Agg(
-    ivy"com.lihaoyi::mill-scalalib:0.2.6",
+    ivy"com.lihaoyi::mill-scalalib:0.2.8",
     ivy"com.lihaoyi::geny:0.1.2",
   )
 
